@@ -1,0 +1,2 @@
+print("weird")
+print("kek")

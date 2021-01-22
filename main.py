@@ -131,16 +131,16 @@ class Tank(pygame.sprite.Sprite):
         self.image = image
         self.rect = self.image.get_rect().move(pos_x, pos_y)
 
-    def move(self, key):
+    def move(self, keys):
         x, y = 0, 0
-        if key == self.Buttons[0]:
+        if keys[self.Buttons[0]]:
             self.angle += ROTATIONSPEED
-        if key == self.Buttons[1]:
+        if keys[self.Buttons[1]]:
             self.angle -= ROTATIONSPEED
-        if key == self.Buttons[2]:
+        if keys[self.Buttons[2]]:
             x = TANKSPEED * math.cos(self.angle * math.pi / 180)
             y = - TANKSPEED * math.sin(self.angle * math.pi / 180)
-        if key == self.Buttons[3]:
+        if keys[self.Buttons[3]]:
             x = - TANKSPEED * math.cos(self.angle * math.pi / 180)
             y = TANKSPEED * math.sin(self.angle * math.pi / 180)
         self.rect.x += x
@@ -166,10 +166,8 @@ class Cursor(pygame.sprite.Sprite):
 
 
 mouse = pygame.sprite.Group()
-mouse = pygame.sprite.Group()
 Cursor(mouse)
 
-print(math.sin(270), math.sin(270 * math.pi / 180))
 if __name__ == '__main__':
     screen.fill(pygame.Color('white'))
     time = 0
@@ -179,8 +177,9 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.KEYDOWN:
-                tank1.move(event.key)
+
+        keys = pygame.key.get_pressed()
+        tank1.move(keys)
 
         screen.fill(pygame.Color('white'))
 

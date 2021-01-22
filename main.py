@@ -5,7 +5,7 @@ import random
 
 
 pygame.init()
-size = width, height = 500, 500
+size = width, height = 1200, 700
 screen = pygame.display.set_mode(size)
 
 
@@ -33,7 +33,7 @@ def load_image(name, colorkey=None):
 
 
 class Tank:
-    pass
+    ass = 0
 
 
 all_sprites = pygame.sprite.Group()
@@ -46,21 +46,43 @@ vertical_borders = pygame.sprite.Group()
 class Border(pygame.sprite.Sprite):
     # строго вертикальный или строго горизонтальный отрезок
     def __init__(self, x1, y1, x2, y2):
-        super().__init__(all_sprites)
-        if x1 == x2:  # вертикальная стенка
-            self.add(vertical_borders)
-            self.image = pygame.Surface([1, y2 - y1])
-            self.rect = pygame.Rect(x1, y1, 1, y2 - y1)
-        else:  # горизонтальная стенка
-            self.add(horizontal_borders)
-            self.image = pygame.Surface([x2 - x1, 1])
-            self.rect = pygame.Rect(x1, y1, x2 - x1, 1)
+        if IsCorrect(x1, y1) and IsCorrect(x2, y2):
+            super().__init__(all_sprites)
+            if x1 == x2:  # вертикальная стенка
+                self.add(vertical_borders)
+                self.image = pygame.Surface([1, y2 - y1])
+                self.rect = pygame.Rect(x1, y1, 1, y2 - y1)
+            else:  # горизонтальная стенка
+                self.add(horizontal_borders)
+                self.image = pygame.Surface([x2 - x1, 1])
+                self.rect = pygame.Rect(x1, y1, x2 - x1, 1)
 
 
 Border(5, 5, width - 5, 5)
 Border(5, height - 5, width - 5, height - 5)
 Border(5, 5, 5, height - 5)
 Border(width - 5, 5, width - 5, height - 5)
+
+
+def load_level(filename):
+    filename = "data/" + filename
+
+    if not os.path.isfile(filename):
+        print(f"Файл с изображением '{filename}' не найден")
+        sys.exit()
+
+    with open(filename, 'r') as mapFile:
+        level_map = [list(map(int, line.strip().split())) for line in mapFile]
+
+    return level_map
+
+
+def generate_level(level):
+    for i in range(len(level)):
+        Border(*level[i])
+
+
+generate_level(load_level("level1.txt"))
 
 
 class Ball(pygame.sprite.Sprite):
@@ -84,7 +106,7 @@ class Ball(pygame.sprite.Sprite):
             self.vx = -self.vx
 
 
-Ball(5, 50, 50, 10, 30)
+Ball(5, 50, 50, 1, 3)
 
 
 class Cursor(pygame.sprite.Sprite):

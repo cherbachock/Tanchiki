@@ -88,6 +88,7 @@ generate_level(load_level("level1.txt"))
 class Ball(pygame.sprite.Sprite):
     def __init__(self, radius, x, y, vx, vy):
         super().__init__(all_sprites)
+        self.time = 0
         self.radius = radius
         self.image = pygame.Surface((2 * radius, 2 * radius),
                                     pygame.SRCALPHA, 32)
@@ -99,6 +100,9 @@ class Ball(pygame.sprite.Sprite):
 
 
     def update(self):
+        self.time += 1
+        if self.time >= 200:
+            self.kill()
         self.rect = self.rect.move(self.vx, self.vy)
         if pygame.sprite.spritecollideany(self, horizontal_borders):
             self.vy = -self.vy
@@ -131,6 +135,7 @@ Cursor(mouse)
 
 if __name__ == '__main__':
     screen.fill(pygame.Color('white'))
+    time = 0
 
     running = True
     while running:  # главный игровой цикл

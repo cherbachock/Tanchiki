@@ -2,11 +2,15 @@ import pygame
 import os
 import sys
 import random
+import math
 
 
 pygame.init()
 size = width, height = 1200, 700
 screen = pygame.display.set_mode(size)
+buttons1 = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
+TANKSPEED = 10
+ROTATIONSPEED = 5
 
 
 def IsCorrect(x, y):
@@ -30,10 +34,6 @@ def load_image(name, colorkey=None):
         image = image.convert_alpha()
 
     return image
-
-
-class Tank:
-    ass = 1
 
 
 all_sprites = pygame.sprite.Group()
@@ -109,6 +109,43 @@ class Ball(pygame.sprite.Sprite):
 Ball(5, 50, 50, 1, 3)
 
 
+def rot_center(image, angle, x, y):
+    rotated_image = pygame.transform.rotate(image, angle)
+    new_rect = rotated_image.get_rect(center=image.get_rect(center=(x, y)).center)
+
+    return rotated_image, new_rect
+
+
+tank_group = pygame.sprite.Group()
+
+
+class Tank(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y, Buttons, image):
+        super().__init__(tank_group, all_sprites)
+        self.angle = 270
+        self.Buttons = Buttons
+        self.image = image
+        self.rect = self.image.get_rect().move(pos_x, pos_y)
+
+    def move(self, key):
+        x, y = 0, 0
+        if key == self.Buttons[0]:
+            self.angle += ROTATIONSPEED
+        if key == self.Buttons[1]:
+            self.angle -= ROTATIONSPEED
+        if key == self.Buttons[2]:
+            x = TANKSPEED * math.cos(self.angle * math.pi / 180)
+            y = - TANKSPEED * math.sin(self.angle * math.pi / 180)
+        if key == self.Buttons[3]:
+            x = - TANKSPEED * math.cos(self.angle * math.pi / 180)
+            y = TANKSPEED * math.sin(self.angle * math.pi / 180)
+        self.rect.x += x
+        self.rect.y += y
+
+
+tank1 = Tank(500, 500, buttons1, load_image('tank_green.png', -1))
+
+
 class Cursor(pygame.sprite.Sprite):
     image = load_image("arrow.png", -1)
     def __init__(self, group):
@@ -128,7 +165,7 @@ mouse = pygame.sprite.Group()
 mouse = pygame.sprite.Group()
 Cursor(mouse)
 
-
+print(math.sin(270), math.sin(270 * math.pi / 180))
 if __name__ == '__main__':
     screen.fill(pygame.Color('white'))
 
@@ -137,6 +174,8 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.KEYDOWN:
+                tank1.move(event.key)
 
         screen.fill(pygame.Color('white'))
 

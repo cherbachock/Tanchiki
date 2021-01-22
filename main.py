@@ -33,7 +33,7 @@ def load_image(name, colorkey=None):
 
 
 class Tank:
-    ass = 0
+    ass = 1
 
 
 all_sprites = pygame.sprite.Group()

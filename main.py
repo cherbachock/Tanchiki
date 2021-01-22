@@ -64,27 +64,6 @@ Border(width - 5, 5, width - 5, height - 5)
 
 
 class Ball(pygame.sprite.Sprite):
-    def __init__(self, radius, x, y):
-        super().__init__(all_sprites)
-        self.radius = radius
-        self.image = pygame.Surface((2 * radius, 2 * radius),
-                                    pygame.SRCALPHA, 32)
-        pygame.draw.circle(self.image, pygame.Color("red"),
-                           (radius, radius), radius)
-        self.rect = pygame.Rect(x, y, 2 * radius, 2 * radius)
-        self.vx = random.randint(-5, 5)
-        self.vy = random.randrange(-5, 5)
-
-
-    def update(self):
-        self.rect = self.rect.move(self.vx, self.vy)
-        if pygame.sprite.spritecollideany(self, horizontal_borders):
-            self.vy = -self.vy
-        if pygame.sprite.spritecollideany(self, vertical_borders):
-            self.vx = -self.vx
-
-
-class Ball(pygame.sprite.Sprite):
     def __init__(self, radius, x, y, vx, vy):
         super().__init__(all_sprites)
         self.radius = radius
@@ -105,9 +84,11 @@ class Ball(pygame.sprite.Sprite):
             self.vx = -self.vx
 
 
+Ball(5, 50, 50, 10, 30)
+
+
 class Cursor(pygame.sprite.Sprite):
     image = load_image("arrow.png", -1)
-
     def __init__(self, group):
         # НЕОБХОДИМО вызвать конструктор родительского класса Sprite.
         # Это очень важно !!!
@@ -119,9 +100,6 @@ class Cursor(pygame.sprite.Sprite):
 
     def update(self, pos):
         self.rect.x, self.rect.y = pos
-
-
-Ball(5, 50, 50, 10, 30)
 
 
 mouse = pygame.sprite.Group()

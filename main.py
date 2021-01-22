@@ -116,6 +116,8 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 running = False
 
+        screen.fill(pygame.Color('white'))
+
         all_sprites.draw(screen)
         all_sprites.update()
 

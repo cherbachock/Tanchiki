@@ -155,7 +155,6 @@ class Tank(pygame.sprite.Sprite):
     def shoot(self):
         vx = BALLSPEED * math.cos(self.angle * math.pi / 180)
         vy = - BALLSPEED * math.sin(self.angle * math.pi / 180)
-        print(self.rect.center)
         Ball(RADIUS, self.rect.center[0], self.rect.center[1], vx, vy)
 
 

@@ -118,20 +118,21 @@ class Ball(pygame.sprite.Sprite):
 Ball(5, 50, 50, 1, 3)
 
 
-def rot_center(image, angle, x, y):
-    rotated_image = pygame.transform.rotate(image, angle)
-    new_rect = rotated_image.get_rect(center=image.get_rect(center=(x, y)).center)
+def rot_center(image, rect, angle):
+    rotated_image = pygame.transform.rotate(image, angle + 90)
+    new_rect = rotated_image.get_rect(center=rect.center)
 
     return rotated_image, new_rect
 
 
 tank_group = pygame.sprite.Group()
+IMAGE0 = load_image('tank_green.png', -1)
 
 
 class Tank(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y, Buttons, image):
+    def __init__(self, pos_x, pos_y, Buttons, image, angle):
         super().__init__(tank_group, all_sprites)
-        self.angle = 270
+        self.angle = angle
         self.Buttons = Buttons
         self.image = image
         self.rect = self.image.get_rect().move(pos_x, pos_y)
@@ -143,14 +144,15 @@ class Tank(pygame.sprite.Sprite):
         if keys[self.Buttons[1]]:
             self.angle -= ROTATIONSPEED
         if keys[self.Buttons[2]]:
-            x = TANKSPEED * math.cos(self.angle * math.pi / 180)
-            y = - TANKSPEED * math.sin(self.angle * math.pi / 180)
+            x = TANKSPEED * math.cos(math.radians(self.angle))
+            y = - TANKSPEED * math.sin(math.radians(self.angle))
         if keys[self.Buttons[3]]:
-            x = - TANKSPEED * math.cos(self.angle * math.pi / 180)
-            y = TANKSPEED * math.sin(self.angle * math.pi / 180)
+            x = - TANKSPEED * math.cos(math.radians(self.angle))
+            y = TANKSPEED * math.sin(math.radians(self.angle))
 
         self.rect.x += x
         self.rect.y += y
+        self.image, self.rect = rot_center(IMAGE0, self.rect, self.angle)
 
     def shoot(self):
         vx = BALLSPEED * math.cos(self.angle * math.pi / 180)
@@ -158,7 +160,7 @@ class Tank(pygame.sprite.Sprite):
         Ball(RADIUS, self.rect.center[0], self.rect.center[1], vx, vy)
 
 
-tank1 = Tank(500, 500, buttons1, load_image('tank_green.png', -1))
+tank1 = Tank(500, 500, buttons1, IMAGE0, 90)
 
 
 class Cursor(pygame.sprite.Sprite):

@@ -6,14 +6,16 @@ import math
 
 
 TANKSPEED = 10
-ROTATIONSPEED = 5
+ROTATIONSPEED = 2
+BALLSPEED = 11
 DISAPPEARTIME = 500
+RADIUS = 5
 size = width, height = 1200, 700
 
 
 pygame.init()
 screen = pygame.display.set_mode(size)
-buttons1 = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
+buttons1 = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_SPACE]
 
 
 def IsCorrect(x, y):
@@ -146,8 +148,15 @@ class Tank(pygame.sprite.Sprite):
         if keys[self.Buttons[3]]:
             x = - TANKSPEED * math.cos(self.angle * math.pi / 180)
             y = TANKSPEED * math.sin(self.angle * math.pi / 180)
+
         self.rect.x += x
         self.rect.y += y
+
+    def shoot(self):
+        vx = BALLSPEED * math.cos(self.angle * math.pi / 180)
+        vy = - BALLSPEED * math.sin(self.angle * math.pi / 180)
+        print(self.rect.center)
+        Ball(RADIUS, self.rect.center[0], self.rect.center[1], vx, vy)
 
 
 tank1 = Tank(500, 500, buttons1, load_image('tank_green.png', -1))
@@ -180,6 +189,9 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == tank1.Buttons[4]:
+                    tank1.shoot()
 
         keys = pygame.key.get_pressed()
         tank1.move(keys)

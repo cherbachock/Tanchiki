@@ -5,12 +5,15 @@ import random
 import math
 
 
-pygame.init()
-size = width, height = 1200, 700
-screen = pygame.display.set_mode(size)
-buttons1 = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
 TANKSPEED = 10
 ROTATIONSPEED = 5
+DISAPPEARTIME = 500
+size = width, height = 1200, 700
+
+
+pygame.init()
+screen = pygame.display.set_mode(size)
+buttons1 = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
 
 
 def IsCorrect(x, y):
@@ -101,7 +104,7 @@ class Ball(pygame.sprite.Sprite):
 
     def update(self):
         self.time += 1
-        if self.time >= 200:
+        if self.time >= DISAPPEARTIME:
             self.kill()
         self.rect = self.rect.move(self.vx, self.vy)
         if pygame.sprite.spritecollideany(self, horizontal_borders):

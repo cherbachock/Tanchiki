@@ -5,9 +5,9 @@ import random
 import math
 
 
-TANKSPEED = 10
-ROTATIONSPEED = 2
-BALLSPEED = 11
+TANKSPEED = 6
+ROTATIONSPEED = 3
+BALLSPEED = 7
 DISAPPEARTIME = 500
 RADIUS = 5
 size = width, height = 1200, 700
@@ -126,7 +126,6 @@ def rot_center(image, rect, angle):
 
 
 tank_group = pygame.sprite.Group()
-IMAGE0 = load_image('tank_green.png', -1)
 
 
 class Tank(pygame.sprite.Sprite):
@@ -152,7 +151,7 @@ class Tank(pygame.sprite.Sprite):
 
         self.rect.x += x
         self.rect.y += y
-        self.image, self.rect = rot_center(IMAGE0, self.rect, self.angle)
+        self.image, self.rect = rot_center(IMAGE1, self.rect, self.angle)
 
     def shoot(self):
         vx = BALLSPEED * math.cos(self.angle * math.pi / 180)
@@ -160,7 +159,8 @@ class Tank(pygame.sprite.Sprite):
         Ball(RADIUS, self.rect.center[0], self.rect.center[1], vx, vy)
 
 
-tank1 = Tank(500, 500, buttons1, IMAGE0, 90)
+IMAGE1 = load_image('tank_green.png', -1)
+tank1 = Tank(500, 500, buttons1, IMAGE1, 90)
 
 
 class Cursor(pygame.sprite.Sprite):

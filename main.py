@@ -136,6 +136,7 @@ class Tank(pygame.sprite.Sprite):
         self.Buttons = Buttons
         self.image = image
         self.rect = self.image.get_rect().move(pos_x, pos_y)
+        self.mask = pygame.mask.from_surface(self.image)
 
     def move(self, keys):
         x, y = 0, 0
@@ -152,7 +153,9 @@ class Tank(pygame.sprite.Sprite):
 
         self.angle = self.angle % 360
 
-        if pygame.sprite.spritecollideany(self, horizontal_borders):
+        coll1 = pygame.sprite.groupcollide(tank_group, horizontal_borders, False, False)
+        coll2 = pygame.sprite.groupcollide(tank_group, vertical_borders, False, False)
+        if coll1:
             if self.angle > 180:
                 if y > 0:
                     y = 0
@@ -160,7 +163,7 @@ class Tank(pygame.sprite.Sprite):
                 if y < 0:
                     y = 0
 
-        if pygame.sprite.spritecollideany(self, vertical_borders):
+        if coll2:
             if 270 > self.angle > 90:
                 if x < 0:
                     x = 0
@@ -171,6 +174,7 @@ class Tank(pygame.sprite.Sprite):
         self.rect.x += round(x)
         self.rect.y += round(y)
         self.image, self.rect = rot_center(IMAGE0, self.rect, self.angle)
+        self.mask = pygame.mask.from_surface(self.image)
 
     def shoot(self):
         vx = BALLSPEED * math.cos(self.angle * math.pi / 180)

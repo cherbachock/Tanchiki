@@ -5,7 +5,7 @@ import random
 import math
 
 
-TANKSPEED = 6
+TANKSPEED = 5
 ROTATIONSPEED = 3
 BALLSPEED = 7
 DISAPPEARTIME = 500
@@ -150,8 +150,26 @@ class Tank(pygame.sprite.Sprite):
             x = - TANKSPEED * math.cos(math.radians(self.angle))
             y = TANKSPEED * math.sin(math.radians(self.angle))
 
-        self.rect.x += x
-        self.rect.y += y
+        self.angle = self.angle % 360
+
+        if pygame.sprite.spritecollideany(self, horizontal_borders):
+            if self.angle > 180:
+                if y > 0:
+                    y = 0
+            else:
+                if y < 0:
+                    y = 0
+
+        if pygame.sprite.spritecollideany(self, vertical_borders):
+            if 270 > self.angle > 90:
+                if x < 0:
+                    x = 0
+            else:
+                if x > 0:
+                    x = 0
+
+        self.rect.x += round(x)
+        self.rect.y += round(y)
         self.image, self.rect = rot_center(IMAGE0, self.rect, self.angle)
 
     def shoot(self):

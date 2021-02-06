@@ -6,10 +6,11 @@ import math
 
 
 TANKSPEED = 5
-ROTATIONSPEED = 3
+ROTATIONSPEED = 4
 BALLSPEED = 7
 DISAPPEARTIME = 500
 RADIUS = 5
+BORDERWIDTH = 3
 size = width, height = 1200, 700
 
 
@@ -55,12 +56,12 @@ class Border(pygame.sprite.Sprite):
             super().__init__(all_sprites)
             if x1 == x2:  # вертикальная стенка
                 self.add(vertical_borders)
-                self.image = pygame.Surface([1, y2 - y1])
-                self.rect = pygame.Rect(x1, y1, 1, y2 - y1)
+                self.image = pygame.Surface([BORDERWIDTH, y2 - y1])
+                self.rect = pygame.Rect(x1, y1, BORDERWIDTH, y2 - y1)
             else:  # горизонтальная стенка
                 self.add(horizontal_borders)
-                self.image = pygame.Surface([x2 - x1, 1])
-                self.rect = pygame.Rect(x1, y1, x2 - x1, 1)
+                self.image = pygame.Surface([x2 - x1, BORDERWIDTH])
+                self.rect = pygame.Rect(x1, y1, x2 - x1, BORDERWIDTH)
 
 
 Border(5, 5, width - 5, 5)
@@ -140,13 +141,17 @@ class Tank(pygame.sprite.Sprite):
 
     def move(self, keys):
         x, y = 0, 0
+
         if keys[self.Buttons[0]]:
             self.angle += ROTATIONSPEED
+
         if keys[self.Buttons[1]]:
             self.angle -= ROTATIONSPEED
+
         if keys[self.Buttons[2]]:
             x = TANKSPEED * math.cos(math.radians(self.angle))
             y = - TANKSPEED * math.sin(math.radians(self.angle))
+
         if keys[self.Buttons[3]]:
             x = - TANKSPEED * math.cos(math.radians(self.angle))
             y = TANKSPEED * math.sin(math.radians(self.angle))

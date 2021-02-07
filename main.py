@@ -58,10 +58,12 @@ class Border(pygame.sprite.Sprite):
                 self.add(vertical_borders)
                 self.image = pygame.Surface([BORDERWIDTH, y2 - y1])
                 self.rect = pygame.Rect(x1, y1, BORDERWIDTH, y2 - y1)
+                self.mask = pygame.mask.from_surface(self.image)
             else:  # горизонтальная стенка
                 self.add(horizontal_borders)
                 self.image = pygame.Surface([x2 - x1, BORDERWIDTH])
                 self.rect = pygame.Rect(x1, y1, x2 - x1, BORDERWIDTH)
+                self.mask = pygame.mask.from_surface(self.image)
 
 
 Border(5, 5, width - 5, 5)
@@ -122,12 +124,13 @@ Ball(5, 50, 50, 1, 3)
 def rot_center(image, rect, angle):
     rotated_image = pygame.transform.rotate(image, angle + 90)
     new_rect = rotated_image.get_rect(center=rect.center)
+    new_mask = pygame.mask.from_surface(rotated_image)
 
-    return rotated_image, new_rect
+    return rotated_image, new_rect, new_mask
 
 
 tank_group = pygame.sprite.Group()
-IMAGE0 = load_image('tank_green.png', -1)
+IMAGE0 = load_image('tank_green.png')
 
 
 class Tank(pygame.sprite.Sprite):
@@ -141,6 +144,25 @@ class Tank(pygame.sprite.Sprite):
 
     def move(self, keys):
         x, y = 0, 0
+
+        coll1 = False
+        up_down = False
+        coll2 = False
+        left_right = False
+
+        for i in horizontal_borders:
+            offset = (i.rect.x - self.rect.x, i.rect.y - self.rect.y)
+            if self.mask.overlap_area(i.mask, offset) > 0:
+                coll1 = True
+                if self.rect.centery < i.rect.y:
+                    up_down = True
+        for i in vertical_borders:
+            offset = (i.rect.x - self.rect.x, i.rect.y - self.rect.y)
+            if self.mask.overlap_area(i.mask, offset) > 0:
+                coll2 = True
+                if self.rect.centerx < i.rect.x:
+                    left_right = True
+
 
         if keys[self.Buttons[0]]:
             self.angle += ROTATIONSPEED
@@ -158,10 +180,8 @@ class Tank(pygame.sprite.Sprite):
 
         self.angle = self.angle % 360
 
-        coll1 = pygame.sprite.groupcollide(tank_group, horizontal_borders, False, False)
-        coll2 = pygame.sprite.groupcollide(tank_group, vertical_borders, False, False)
         if coll1:
-            if self.angle > 180:
+            if up_down:
                 if y > 0:
                     y = 0
             else:
@@ -169,17 +189,16 @@ class Tank(pygame.sprite.Sprite):
                     y = 0
 
         if coll2:
-            if 270 > self.angle > 90:
-                if x < 0:
+            if left_right:
+                if x > 0:
                     x = 0
             else:
-                if x > 0:
+                if x < 0:
                     x = 0
 
         self.rect.x += round(x)
         self.rect.y += round(y)
-        self.image, self.rect = rot_center(IMAGE0, self.rect, self.angle)
-        self.mask = pygame.mask.from_surface(self.image)
+        self.image, self.rect, self.mask = rot_center(IMAGE0, self.rect, self.angle)
 
     def shoot(self):
         vx = BALLSPEED * math.cos(self.angle * math.pi / 180)

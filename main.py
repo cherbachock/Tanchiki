@@ -203,7 +203,9 @@ class Tank(pygame.sprite.Sprite):
     def shoot(self):
         vx = BALLSPEED * math.cos(self.angle * math.pi / 180)
         vy = - BALLSPEED * math.sin(self.angle * math.pi / 180)
-        Ball(RADIUS, self.rect.center[0], self.rect.center[1], vx, vy)
+        x = IMAGE0.get_width() * math.cos(self.angle * math.pi / 180) / 2
+        y = - IMAGE0.get_width() * math.sin(self.angle * math.pi / 180) / 2
+        Ball(RADIUS, self.rect.center[0] + x, self.rect.center[1] + y, vx, vy)
 
 
 tank1 = Tank(500, 500, buttons1, IMAGE0, 90)

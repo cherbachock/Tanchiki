@@ -3,18 +3,22 @@ import os
 import sys
 import random
 import math
-
-
-TANKSPEED = 5
-ROTATIONSPEED = 4
-BALLSPEED = 7
-DISAPPEARTIME = 500
-RADIUS = 5
-BORDERWIDTH = 3
-size = width, height = 1200, 700
+import ctypes
 
 
 pygame.init()
+
+
+TANKSPEED = 8
+ROTATIONSPEED = 6
+BALLSPEED = 10
+DISAPPEARTIME = 500
+RADIUS = 5
+BORDERWIDTH = 3
+user32 = ctypes.windll.user32
+size = width, height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1) - 50
+
+
 screen = pygame.display.set_mode(size)
 buttons1 = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_SPACE]
 
@@ -255,5 +259,5 @@ if __name__ == '__main__':
             mouse.draw(screen)
             mouse.update(pygame.mouse.get_pos())
 
-        pygame.time.delay(10)
+        pygame.time.delay(20)
         pygame.display.flip()

@@ -96,10 +96,13 @@ def generate_level(level):
 
 generate_level(load_level("level1.txt"))
 
+Balls = pygame.sprite.Group()
+
 
 class Ball(pygame.sprite.Sprite):
     def __init__(self, radius, x, y, vx, vy):
         super().__init__(all_sprites)
+        self.add(Balls)
         self.time = 0
         self.radius = radius
         self.image = pygame.Surface((2 * radius, 2 * radius),
@@ -210,6 +213,13 @@ class Tank(pygame.sprite.Sprite):
         x = IMAGE0.get_width() * math.cos(self.angle * math.pi / 180) / 2
         y = - IMAGE0.get_width() * math.sin(self.angle * math.pi / 180) / 2
         Ball(RADIUS, self.rect.center[0] + x, self.rect.center[1] + y, vx, vy)
+
+    def update(self, *args, **kwargs):
+        if pygame.sprite.spritecollideany(self, Balls):
+            self.die()
+
+    def die(self):
+        self.kill()
 
 
 tank1 = Tank(500, 500, buttons1, IMAGE0, 90)

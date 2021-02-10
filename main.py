@@ -216,6 +216,7 @@ class Tank(pygame.sprite.Sprite):
         Ball(RADIUS, self.rect.center[0] + x - RADIUS // 2, self.rect.center[1] + y - RADIUS // 2, vx, vy)
 
     def update(self, *args, **kwargs):
+        # popa
         for i in Balls:
             offset = (i.rect.x - self.rect.x, i.rect.y - self.rect.y)
             if self.mask.overlap_area(i.mask, offset) > 0:

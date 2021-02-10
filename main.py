@@ -11,7 +11,7 @@ pygame.init()
 
 TANKSPEED = 6
 ROTATIONSPEED = 4
-BALLSPEED = 8
+BALLSPEED = 4
 DISAPPEARTIME = 500
 RADIUS = 6
 BORDERWIDTH = 3
@@ -110,6 +110,7 @@ class Ball(pygame.sprite.Sprite):
         pygame.draw.circle(self.image, pygame.Color("black"),
                            (radius, radius), radius)
         self.rect = pygame.Rect(x, y, 2 * radius, 2 * radius)
+        self.mask = pygame.mask.from_surface(self.image)
         self.vx = vx
         self.vy = vy
 
@@ -210,13 +211,17 @@ class Tank(pygame.sprite.Sprite):
     def shoot(self):
         vx = BALLSPEED * math.cos(self.angle * math.pi / 180)
         vy = - BALLSPEED * math.sin(self.angle * math.pi / 180)
-        x = IMAGE0.get_width() * math.cos(self.angle * math.pi / 180) / 2
-        y = - IMAGE0.get_width() * math.sin(self.angle * math.pi / 180) / 2
-        Ball(RADIUS, self.rect.center[0] + x, self.rect.center[1] + y, vx, vy)
+        x = (IMAGE0.get_width() + 4 * RADIUS) * math.cos(self.angle * math.pi / 180) / 2
+        y = - (IMAGE0.get_height() + 4 * RADIUS) * math.sin(self.angle * math.pi / 180) / 2
+        Ball(RADIUS, self.rect.center[0] + x - RADIUS // 2, self.rect.center[1] + y - RADIUS // 2, vx, vy)
 
     def update(self, *args, **kwargs):
-        if pygame.sprite.spritecollideany(self, Balls):
-            self.die()
+        for i in Balls:
+            offset = (i.rect.x - self.rect.x, i.rect.y - self.rect.y)
+            if self.mask.overlap_area(i.mask, offset) > 0:
+                self.die()
+                i.kill()
+                break
 
     def die(self):
         self.kill()

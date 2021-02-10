@@ -9,11 +9,11 @@ import ctypes
 pygame.init()
 
 
-TANKSPEED = 8
-ROTATIONSPEED = 6
-BALLSPEED = 10
+TANKSPEED = 6
+ROTATIONSPEED = 4
+BALLSPEED = 8
 DISAPPEARTIME = 500
-RADIUS = 5
+RADIUS = 6
 BORDERWIDTH = 3
 user32 = ctypes.windll.user32
 size = width, height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1) - 50
@@ -259,5 +259,5 @@ if __name__ == '__main__':
             mouse.draw(screen)
             mouse.update(pygame.mouse.get_pos())
 
-        pygame.time.delay(20)
+        pygame.time.delay(10)
         pygame.display.flip()

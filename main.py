@@ -11,7 +11,7 @@ pygame.init()
 
 TANKSPEED = 6
 ROTATIONSPEED = 4
-BALLSPEED = 4
+BALLSPEED = 8
 DISAPPEARTIME = 500
 RADIUS = 6
 BORDERWIDTH = 3
@@ -138,12 +138,15 @@ def rot_center(image, rect, angle):
 
 
 tank_group = pygame.sprite.Group()
+AllTanks = []
 IMAGE0 = load_image('tank_green.png')
 
 
 class Tank(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y, Buttons, image, angle):
         super().__init__(tank_group, all_sprites)
+        self.index = len(AllTanks)
+        AllTanks.append(self)
         self.angle = angle
         self.Buttons = Buttons
         self.image = image
@@ -225,10 +228,10 @@ class Tank(pygame.sprite.Sprite):
 
     def die(self):
         self.kill()
+        AllTanks.pop(self.index)
 
 
 tank1 = Tank(500, 500, buttons1, IMAGE0, 90)
-
 
 class Cursor(pygame.sprite.Sprite):
     image = load_image("arrow.png", -1)
@@ -258,11 +261,13 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
-                if event.key == tank1.Buttons[4]:
-                    tank1.shoot()
+                for i in range(len(AllTanks)):
+                    if event.key == tank1.Buttons[4]:
+                        tank1.shoot()
 
         keys = pygame.key.get_pressed()
-        tank1.move(keys)
+        for i in range(len(AllTanks)):
+            AllTanks[i].move(keys)
 
         screen.fill(pygame.Color('white'))
 

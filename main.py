@@ -14,6 +14,7 @@ ROTATIONSPEED = 4
 BALLSPEED = 8
 DISAPPEARTIME = 500
 RADIUS = 6
+SAFETIME = 10
 BORDERWIDTH = 3
 user32 = ctypes.windll.user32
 size = width, height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1) - 50
@@ -223,9 +224,10 @@ class Tank(pygame.sprite.Sprite):
         for i in Balls:
             offset = (i.rect.x - self.rect.x, i.rect.y - self.rect.y)
             if self.mask.overlap_area(i.mask, offset) > 0:
-                self.die()
-                i.kill()
-                break
+                if i.time > SAFETIME:
+                    self.die()
+                    i.kill()
+                    break
 
     def die(self):
         self.kill()

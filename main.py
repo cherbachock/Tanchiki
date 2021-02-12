@@ -14,7 +14,7 @@ ROTATIONSPEED = 4
 BALLSPEED = 8
 DISAPPEARTIME = 500
 RADIUS = 6
-SAFETIME = 10
+SAFETIME = 12
 BORDERWIDTH = 3
 user32 = ctypes.windll.user32
 size = width, height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1) - 50
@@ -102,7 +102,7 @@ Balls = pygame.sprite.Group()
 
 
 class Ball(pygame.sprite.Sprite):
-    def __init__(self, radius, x, y, vx, vy):
+    def __init__(self, radius, x, y, vx, vy, parent):
         super().__init__(all_sprites)
         self.add(Balls)
         self.time = 0
@@ -115,6 +115,7 @@ class Ball(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.vx = vx
         self.vy = vy
+        self.parent = parent
 
 
     def update(self):
@@ -126,9 +127,6 @@ class Ball(pygame.sprite.Sprite):
             self.vy = -self.vy
         if pygame.sprite.spritecollideany(self, vertical_borders):
             self.vx = -self.vx
-
-
-Ball(5, 50, 50, 1, 3)
 
 
 def rot_center(image, rect, angle):
@@ -218,13 +216,13 @@ class Tank(pygame.sprite.Sprite):
         vy = - BALLSPEED * math.sin(self.angle * math.pi / 180)
         x = (self.IMAGE0.get_width() + 4 * RADIUS) * math.cos(self.angle * math.pi / 180) / 2
         y = - (self.IMAGE0.get_height() + 4 * RADIUS) * math.sin(self.angle * math.pi / 180) / 2
-        Ball(RADIUS, self.rect.center[0] + x - RADIUS // 2, self.rect.center[1] + y - RADIUS // 2, vx, vy)
+        Ball(RADIUS, self.rect.center[0] + x - RADIUS // 2, self.rect.center[1] + y - RADIUS // 2, vx, vy, self.index)
 
     def update(self, *args, **kwargs):
         for i in Balls:
             offset = (i.rect.x - self.rect.x, i.rect.y - self.rect.y)
             if self.mask.overlap_area(i.mask, offset) > 0:
-                if i.time > SAFETIME:
+                if i.time > SAFETIME or i.parent != self.index:
                     self.die()
                     i.kill()
                     break

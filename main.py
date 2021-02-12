@@ -21,6 +21,7 @@ size = width, height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1) - 
 
 screen = pygame.display.set_mode(size)
 buttons1 = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_SPACE]
+buttons2 = [pygame.K_s, pygame.K_f, pygame.K_e, pygame.K_d, pygame.K_q]
 
 
 def IsCorrect(x, y):
@@ -139,7 +140,6 @@ def rot_center(image, rect, angle):
 
 tank_group = pygame.sprite.Group()
 AllTanks = []
-IMAGE0 = load_image('tank_green.png')
 
 
 class Tank(pygame.sprite.Sprite):
@@ -150,6 +150,7 @@ class Tank(pygame.sprite.Sprite):
         self.angle = angle
         self.Buttons = Buttons
         self.image = image
+        self.IMAGE0 = image
         self.rect = self.image.get_rect().move(pos_x, pos_y)
         self.mask = pygame.mask.from_surface(self.image)
 
@@ -209,13 +210,13 @@ class Tank(pygame.sprite.Sprite):
 
         self.rect.x += round(x)
         self.rect.y += round(y)
-        self.image, self.rect, self.mask = rot_center(IMAGE0, self.rect, self.angle)
+        self.image, self.rect, self.mask = rot_center(self.IMAGE0, self.rect, self.angle)
 
     def shoot(self):
         vx = BALLSPEED * math.cos(self.angle * math.pi / 180)
         vy = - BALLSPEED * math.sin(self.angle * math.pi / 180)
-        x = (IMAGE0.get_width() + 4 * RADIUS) * math.cos(self.angle * math.pi / 180) / 2
-        y = - (IMAGE0.get_height() + 4 * RADIUS) * math.sin(self.angle * math.pi / 180) / 2
+        x = (self.IMAGE0.get_width() + 4 * RADIUS) * math.cos(self.angle * math.pi / 180) / 2
+        y = - (self.IMAGE0.get_height() + 4 * RADIUS) * math.sin(self.angle * math.pi / 180) / 2
         Ball(RADIUS, self.rect.center[0] + x - RADIUS // 2, self.rect.center[1] + y - RADIUS // 2, vx, vy)
 
     def update(self, *args, **kwargs):
@@ -231,7 +232,9 @@ class Tank(pygame.sprite.Sprite):
         AllTanks.pop(self.index)
 
 
-tank1 = Tank(500, 500, buttons1, IMAGE0, 90)
+tank1 = Tank(500, 500, buttons1, load_image('tank_green.png'), 90)
+tank2 = Tank(700, 700, buttons2, load_image('tank_red.png'), 90)
+
 
 class Cursor(pygame.sprite.Sprite):
     image = load_image("arrow.png", -1)
@@ -262,8 +265,8 @@ if __name__ == '__main__':
                 running = False
             if event.type == pygame.KEYDOWN:
                 for i in range(len(AllTanks)):
-                    if event.key == tank1.Buttons[4]:
-                        tank1.shoot()
+                    if event.key == AllTanks[i].Buttons[4]:
+                        AllTanks[i].shoot()
 
         keys = pygame.key.get_pressed()
         for i in range(len(AllTanks)):

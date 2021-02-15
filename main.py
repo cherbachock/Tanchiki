@@ -8,7 +8,7 @@ import ctypes
 
 pygame.init()
 
-BOARDSDENSITY = 1/3
+BOARDSDENSITY = 1/2
 TANKSPEED = 6
 ROTATIONSPEED = 4
 BALLSPEED = 8
@@ -109,7 +109,7 @@ def dfs(x, y):
     for i in range(len(m)):
         a = x + m[i][0]
         b = y + m[i][1]
-        if 0 <= a <= 7 and 0 <= b <= 4:
+        if 0 <= a <= 8 and 0 <= b <= 4:
             if color[a][b][0] == 0:
                 if decision(BOARDSDENSITY):
                     color[x][y].append([a, b])
@@ -123,8 +123,8 @@ def convert(x, y):
 def new_lewel():
     global color
     level = []
-    color = [0] * 8
-    for i in range(8):
+    color = [0] * 9
+    for i in range(9):
         color[i] = [0] * 5
     for i in range(len(color)):
         for j in range(len(color[i])):
@@ -141,6 +141,7 @@ def new_lewel():
                 a = convert(i, j)
                 b = convert(color[i][j][x][0], color[i][j][x][1])
                 level.append([a[0], a[1], b[0], b[1]])
+    print(color)
     return level
 
 

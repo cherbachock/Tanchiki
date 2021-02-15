@@ -8,7 +8,7 @@ import ctypes
 
 pygame.init()
 
-
+BOARDSDENSITY = 1/3
 TANKSPEED = 6
 ROTATIONSPEED = 4
 BALLSPEED = 8
@@ -18,8 +18,6 @@ SAFETIME = 12
 BORDERWIDTH = 3
 user32 = ctypes.windll.user32
 size = width, height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1) - 50
-
-
 screen = pygame.display.set_mode(size)
 buttons1 = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_SPACE]
 buttons2 = [pygame.K_s, pygame.K_f, pygame.K_e, pygame.K_d, pygame.K_q]
@@ -62,11 +60,13 @@ class Border(pygame.sprite.Sprite):
             super().__init__(all_sprites)
             if x1 == x2:  # вертикальная стенка
                 self.add(vertical_borders)
+                y2, y1 = max(y2, y1), min(y2, y1)
                 self.image = pygame.Surface([BORDERWIDTH, y2 - y1])
                 self.rect = pygame.Rect(x1, y1, BORDERWIDTH, y2 - y1)
                 self.mask = pygame.mask.from_surface(self.image)
             else:  # горизонтальная стенка
                 self.add(horizontal_borders)
+                x2, x1 = max(x2, x1), min(x2, x1)
                 self.image = pygame.Surface([x2 - x1, BORDERWIDTH])
                 self.rect = pygame.Rect(x1, y1, x2 - x1, BORDERWIDTH)
                 self.mask = pygame.mask.from_surface(self.image)
@@ -95,8 +95,57 @@ def generate_level(level):
     for i in range(len(level)):
         Border(*level[i])
 
+color = []
 
-generate_level(load_level("level1.txt"))
+
+def decision(probability):
+    return random.random() < probability
+
+
+def dfs(x, y):
+    global color
+    color[x][y][0] = 1
+    m = [[-1, 0], [1, 0], [0, -1], [0, 1]]
+    for i in range(len(m)):
+        a = x + m[i][0]
+        b = y + m[i][1]
+        if 0 <= a <= 7 and 0 <= b <= 4:
+            if color[a][b][0] == 0:
+                if decision(BOARDSDENSITY):
+                    color[x][y].append([a, b])
+                    dfs(a, b)
+
+
+def convert(x, y):
+    return int(5 + (x + 1) * (width - 10) / 10), int(5 + (y + 1) * (height - 10) / 6)
+
+
+def new_lewel():
+    global color
+    level = []
+    color = [0] * 8
+    for i in range(8):
+        color[i] = [0] * 5
+    for i in range(len(color)):
+        for j in range(len(color[i])):
+            color[i][j] = [0]
+
+    for i in range(len(color)):
+        for j in range(len(color[i])):
+            if color[i][j][0] == 0:
+                dfs(i, j)
+
+    for i in range(len(color)):
+        for j in range(len(color[i])):
+            for x in range(1, len(color[i][j])):
+                a = convert(i, j)
+                b = convert(color[i][j][x][0], color[i][j][x][1])
+                level.append([a[0], a[1], b[0], b[1]])
+    return level
+
+
+a = new_lewel()
+generate_level(a)
 
 Balls = pygame.sprite.Group()
 

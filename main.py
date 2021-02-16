@@ -16,6 +16,7 @@ DISAPPEARTIME = 500
 RADIUS = 6
 SAFETIME = 12
 BORDERWIDTH = 3
+BULLETS = 6
 user32 = ctypes.windll.user32
 size = width, height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1) - 50
 screen = pygame.display.set_mode(size)
@@ -165,18 +166,62 @@ class Ball(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.vx = vx
         self.vy = vy
+        self.vx0 = vx
+        self.vy0 = vy
+        self.up_down = self.vy0 < 0
+        self.left_right = self.vx0 < 0
         self.parent = parent
 
 
     def update(self):
         self.time += 1
         if self.time >= DISAPPEARTIME:
+            if AllTanks[self.parent]:
+                AllTanks[self.parent].bullets -= 1
             self.kill()
+
+        coll1 = False
+        up_down = False
+        coll2 = False
+        left_right = False
+
+        for i in horizontal_borders:
+            offset = (i.rect.x - self.rect.x, i.rect.y - self.rect.y)
+            if self.mask.overlap_area(i.mask, offset) > 0:
+                coll1 = True
+                if self.rect.centery < i.rect.y:
+                    up_down = True
+        for i in vertical_borders:
+            offset = (i.rect.x - self.rect.x, i.rect.y - self.rect.y)
+            if self.mask.overlap_area(i.mask, offset) > 0:
+                coll2 = True
+                if self.rect.centerx < i.rect.x:
+                    left_right = True
+
+        if coll1:
+            if up_down:
+                if not self.up_down:
+                    self.vy = -self.vy0
+                else:
+                    self.vy = self.vy0
+            else:
+                if self.up_down:
+                    self.vy = -self.vy0
+                else:
+                    self.vy = self.vy0
+        if coll2:
+            if left_right:
+                if not self.left_right:
+                    self.vx = -self.vx0
+                else:
+                    self.vx = self.vx0
+            else:
+                if self.left_right:
+                    self.vx = -self.vx0
+                else:
+                    self.vx = self.vx0
+
         self.rect = self.rect.move(self.vx, self.vy)
-        if pygame.sprite.spritecollideany(self, horizontal_borders):
-            self.vy = -self.vy
-        if pygame.sprite.spritecollideany(self, vertical_borders):
-            self.vx = -self.vx
 
 
 def rot_center(image, rect, angle):
@@ -200,6 +245,7 @@ class Tank(pygame.sprite.Sprite):
         self.Buttons = Buttons
         self.image = image
         self.IMAGE0 = image
+        self.bullets = 0
         self.rect = self.image.get_rect().move(pos_x, pos_y)
         self.mask = pygame.mask.from_surface(self.image)
 
@@ -262,10 +308,13 @@ class Tank(pygame.sprite.Sprite):
         self.image, self.rect, self.mask = rot_center(self.IMAGE0, self.rect, self.angle)
 
     def shoot(self):
+        if self.bullets > BULLETS:
+            return
         vx = BALLSPEED * math.cos(self.angle * math.pi / 180)
         vy = - BALLSPEED * math.sin(self.angle * math.pi / 180)
         x = (self.IMAGE0.get_width() + 4 * RADIUS) * math.cos(self.angle * math.pi / 180) / 2
         y = - (self.IMAGE0.get_height() + 4 * RADIUS) * math.sin(self.angle * math.pi / 180) / 2
+        self.bullets += 1
         Ball(RADIUS, self.rect.center[0] + x - RADIUS // 2, self.rect.center[1] + y - RADIUS // 2, vx, vy, self.index)
 
     def update(self, *args, **kwargs):

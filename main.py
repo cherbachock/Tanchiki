@@ -355,21 +355,6 @@ class Tank(pygame.sprite.Sprite):
         all_sprites.add(self)
 
 
-class Cursor(pygame.sprite.Sprite):
-    image = load_image("arrow.png", -1)
-    def __init__(self, group):
-        # НЕОБХОДИМО вызвать конструктор родительского класса Sprite.
-        # Это очень важно !!!
-        super().__init__(group)
-        self.image = Cursor.image
-        self.rect = self.image.get_rect()
-
-        self.Visible = True
-
-    def update(self, pos):
-        self.rect.x, self.rect.y = pos
-
-
 def LivesCounter(mas):
     answer = 0
     for i in range(len(mas)):
@@ -384,9 +369,6 @@ make_perimetr()
 
 tank1 = Tank(buttons1, load_image('tank_green.png'))
 tank2 = Tank(buttons2, load_image('tank_red.png'))
-
-mouse = pygame.sprite.Group()
-Cursor(mouse)
 
 
 if __name__ == '__main__':
@@ -412,8 +394,6 @@ if __name__ == '__main__':
 
         if pygame.mouse.get_focused():
             pygame.mouse.set_visible(False)
-            mouse.draw(screen)
-            mouse.update(pygame.mouse.get_pos())
 
         if LivesCounter(AllTanks) < 2:
             all_sprites.empty()

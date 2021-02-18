@@ -9,6 +9,7 @@ import ctypes
 pygame.init()
 
 BOARDSDENSITY = 1/2
+N, M = 9, 5
 TANKSPEED = 6
 ROTATIONSPEED = 4
 BALLSPEED = 8
@@ -17,6 +18,8 @@ RADIUS = 6
 SAFETIME = 12
 BORDERWIDTH = 3
 BULLETS = 6
+
+
 user32 = ctypes.windll.user32
 size = width, height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1) - 50
 screen = pygame.display.set_mode(size)
@@ -110,7 +113,7 @@ def dfs(x, y):
     for i in range(len(m)):
         a = x + m[i][0]
         b = y + m[i][1]
-        if 0 <= a <= 8 and 0 <= b <= 4:
+        if 0 <= a <= N-2 and 0 <= b <= M-2:
             if color[a][b][0] == 0:
                 if decision(BOARDSDENSITY):
                     color[x][y].append([a, b])
@@ -118,15 +121,15 @@ def dfs(x, y):
 
 
 def convert(x, y):
-    return int(5 + (x + 1) * (width - 10) / 10), int(5 + (y + 1) * (height - 10) / 6)
+    return int(5 + (x + 1) * (width - 10) / N), int(5 + (y + 1) * (height - 10) / M)
 
 
 def new_lewel():
     global color
     level = []
-    color = [0] * 9
-    for i in range(9):
-        color[i] = [0] * 5
+    color = [0] * (N-1)
+    for i in range(N-1):
+        color[i] = [0] * (M-1)
     for i in range(len(color)):
         for j in range(len(color[i])):
             color[i][j] = [0]
@@ -142,13 +145,11 @@ def new_lewel():
                 a = convert(i, j)
                 b = convert(color[i][j][x][0], color[i][j][x][1])
                 level.append([a[0], a[1], b[0], b[1]])
-    print(color)
     return level
 
 
 a = new_lewel()
 generate_level(a)
-
 Balls = pygame.sprite.Group()
 
 
@@ -237,16 +238,18 @@ AllTanks = []
 
 
 class Tank(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y, Buttons, image, angle):
+    def __init__(self, Buttons, image):
         super().__init__(tank_group, all_sprites)
         self.index = len(AllTanks)
         AllTanks.append(self)
-        self.angle = angle
+        self.angle = random.randrange(0, 360)
         self.Buttons = Buttons
         self.image = image
         self.IMAGE0 = image
         self.bullets = 0
-        self.rect = self.image.get_rect().move(pos_x, pos_y)
+        self.alive = True
+        x, y = random.randrange(5, width-10, width//N), random.randrange(5, height - 10, height // M)
+        self.rect = self.image.get_rect().move(x, y)
         self.mask = pygame.mask.from_surface(self.image)
 
     def move(self, keys):
@@ -312,8 +315,8 @@ class Tank(pygame.sprite.Sprite):
             return
         vx = BALLSPEED * math.cos(self.angle * math.pi / 180)
         vy = - BALLSPEED * math.sin(self.angle * math.pi / 180)
-        x = (self.IMAGE0.get_width() + 4 * RADIUS) * math.cos(self.angle * math.pi / 180) / 2
-        y = - (self.IMAGE0.get_height() + 4 * RADIUS) * math.sin(self.angle * math.pi / 180) / 2
+        x = (self.IMAGE0.get_width()) * math.cos(self.angle * math.pi / 180) / 2
+        y = - (self.IMAGE0.get_height()) * math.sin(self.angle * math.pi / 180) / 2
         self.bullets += 1
         Ball(RADIUS, self.rect.center[0] + x - RADIUS // 2, self.rect.center[1] + y - RADIUS // 2, vx, vy, self.index)
 
@@ -322,17 +325,14 @@ class Tank(pygame.sprite.Sprite):
             offset = (i.rect.x - self.rect.x, i.rect.y - self.rect.y)
             if self.mask.overlap_area(i.mask, offset) > 0:
                 if i.time > SAFETIME or i.parent != self.index:
-                    self.die()
+                    self.alive = False
+                    self.kill()
                     i.kill()
                     break
 
-    def die(self):
-        self.kill()
-        AllTanks.pop(self.index)
 
-
-tank1 = Tank(500, 500, buttons1, load_image('tank_green.png'), 90)
-tank2 = Tank(700, 700, buttons2, load_image('tank_red.png'), 90)
+tank1 = Tank(buttons1, load_image('tank_green.png'))
+tank2 = Tank(buttons2, load_image('tank_red.png'))
 
 
 class Cursor(pygame.sprite.Sprite):
@@ -353,6 +353,7 @@ class Cursor(pygame.sprite.Sprite):
 mouse = pygame.sprite.Group()
 Cursor(mouse)
 
+
 if __name__ == '__main__':
     screen.fill(pygame.Color('white'))
     time = 0
@@ -364,12 +365,14 @@ if __name__ == '__main__':
                 running = False
             if event.type == pygame.KEYDOWN:
                 for i in range(len(AllTanks)):
-                    if event.key == AllTanks[i].Buttons[4]:
-                        AllTanks[i].shoot()
+                    if AllTanks[i].alive:
+                        if event.key == AllTanks[i].Buttons[4]:
+                            AllTanks[i].shoot()
 
         keys = pygame.key.get_pressed()
         for i in range(len(AllTanks)):
-            AllTanks[i].move(keys)
+            if AllTanks[i].alive:
+                AllTanks[i].move(keys)
 
         screen.fill(pygame.Color('white'))
 

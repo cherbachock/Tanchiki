@@ -18,6 +18,7 @@ RADIUS = 6
 SAFETIME = 12
 BORDERWIDTH = 3
 BULLETS = 6
+BOOM = []
 
 
 user32 = ctypes.windll.user32
@@ -234,6 +235,9 @@ def rot_center(image, rect, angle):
 tank_group = pygame.sprite.Group()
 AllTanks = []
 
+for i in range(1, 6):
+    BOOM.append(load_image('explosionSmoke' + str(i) + '.png', -1))
+
 
 class Tank(pygame.sprite.Sprite):
     def __init__(self, Buttons, image):
@@ -324,10 +328,17 @@ class Tank(pygame.sprite.Sprite):
             offset = (i.rect.x - self.rect.x, i.rect.y - self.rect.y)
             if self.mask.overlap_area(i.mask, offset) > 0:
                 if i.time > SAFETIME or i.parent != self.index:
+                    i.kill()
+                    for t in BOOM:
+                        self.image = t
+                        screen.fill(pygame.Color('white'))
+                        all_sprites.draw(screen)
+                        pygame.display.flip()
+                        pygame.time.delay(100)
+                    pygame.time.delay(400)
                     self.alive = False
                     self.kill()
                     self.dies += 1
-                    i.kill()
                     break
 
     def transfer(self):

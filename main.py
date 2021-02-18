@@ -75,11 +75,11 @@ class Border(pygame.sprite.Sprite):
                 self.rect = pygame.Rect(x1, y1, x2 - x1, BORDERWIDTH)
                 self.mask = pygame.mask.from_surface(self.image)
 
-
-Border(5, 5, width - 5, 5)
-Border(5, height - 5, width - 5, height - 5)
-Border(5, 5, 5, height - 5)
-Border(width - 5, 5, width - 5, height - 5)
+def make_perimetr():
+    Border(5, 5, width - 5, 5)
+    Border(5, height - 5, width - 5, height - 5)
+    Border(5, 5, 5, height - 5)
+    Border(width - 5, 5, width - 5, height - 5)
 
 
 def load_level(filename):
@@ -148,8 +148,6 @@ def new_lewel():
     return level
 
 
-a = new_lewel()
-generate_level(a)
 Balls = pygame.sprite.Group()
 
 
@@ -247,6 +245,7 @@ class Tank(pygame.sprite.Sprite):
         self.image = image
         self.IMAGE0 = image
         self.bullets = 0
+        self.dies = 0
         self.alive = True
         x, y = random.randrange(5, width-10, width//N), random.randrange(5, height - 10, height // M)
         self.rect = self.image.get_rect().move(x, y)
@@ -327,12 +326,16 @@ class Tank(pygame.sprite.Sprite):
                 if i.time > SAFETIME or i.parent != self.index:
                     self.alive = False
                     self.kill()
+                    self.dies += 1
                     i.kill()
                     break
 
-
-tank1 = Tank(buttons1, load_image('tank_green.png'))
-tank2 = Tank(buttons2, load_image('tank_red.png'))
+    def transfer(self):
+        self.alive = True
+        self.angle = random.randrange(0, 360)
+        x, y = random.randrange(5, width - 10, width // N), random.randrange(5, height - 10, height // M)
+        self.rect = self.image.get_rect().move(x, y)
+        all_sprites.add(self)
 
 
 class Cursor(pygame.sprite.Sprite):
@@ -349,6 +352,21 @@ class Cursor(pygame.sprite.Sprite):
     def update(self, pos):
         self.rect.x, self.rect.y = pos
 
+
+def LivesCounter(mas):
+    answer = 0
+    for i in range(len(mas)):
+        if mas[i].alive:
+            answer += 1
+    return answer
+
+
+generate_level(new_lewel())
+
+make_perimetr()
+
+tank1 = Tank(buttons1, load_image('tank_green.png'))
+tank2 = Tank(buttons2, load_image('tank_red.png'))
 
 mouse = pygame.sprite.Group()
 Cursor(mouse)
@@ -374,15 +392,27 @@ if __name__ == '__main__':
             if AllTanks[i].alive:
                 AllTanks[i].move(keys)
 
-        screen.fill(pygame.Color('white'))
-
-        all_sprites.draw(screen)
-        all_sprites.update()
 
         if pygame.mouse.get_focused():
             pygame.mouse.set_visible(False)
             mouse.draw(screen)
             mouse.update(pygame.mouse.get_pos())
+
+        if LivesCounter(AllTanks) < 2:
+            all_sprites.empty()
+            vertical_borders.empty()
+            horizontal_borders.empty()
+            Balls.empty()
+            for item in AllTanks:
+                item.bullets = 0
+            make_perimetr()
+            generate_level(new_lewel())
+            for i in range(len(AllTanks)):
+                AllTanks[i].transfer()
+
+        screen.fill(pygame.Color('white'))
+        all_sprites.draw(screen)
+        all_sprites.update()
 
         pygame.time.delay(10)
         pygame.display.flip()

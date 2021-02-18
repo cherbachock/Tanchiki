@@ -10,9 +10,9 @@ pygame.init()
 
 BOARDSDENSITY = 1/2
 N, M = 9, 5
-TANKSPEED = 6
-ROTATIONSPEED = 4
-BALLSPEED = 8
+TANKSPEED = 4
+ROTATIONSPEED = 3
+BALLSPEED = 6
 DISAPPEARTIME = 500
 RADIUS = 6
 SAFETIME = 12
@@ -168,8 +168,8 @@ class Ball(pygame.sprite.Sprite):
         self.vy = vy
         self.vx0 = vx
         self.vy0 = vy
-        self.up_down = self.vy0 < 0
-        self.left_right = self.vx0 < 0
+        self.up_down = self.vy0 <= 0
+        self.left_right = self.vx0 <= 0
         self.parent = parent
 
 
@@ -189,13 +189,13 @@ class Ball(pygame.sprite.Sprite):
             offset = (i.rect.x - self.rect.x, i.rect.y - self.rect.y)
             if self.mask.overlap_area(i.mask, offset) > 0:
                 coll1 = True
-                if self.rect.centery < i.rect.y:
+                if self.rect.centery <= i.rect.y:
                     up_down = True
         for i in vertical_borders:
             offset = (i.rect.x - self.rect.x, i.rect.y - self.rect.y)
             if self.mask.overlap_area(i.mask, offset) > 0:
                 coll2 = True
-                if self.rect.centerx < i.rect.x:
+                if self.rect.centerx <= i.rect.x:
                     left_right = True
 
         if coll1:

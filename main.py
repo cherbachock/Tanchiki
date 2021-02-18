@@ -69,18 +69,18 @@ class Border(pygame.sprite.Sprite):
                 self.image = pygame.Surface([BORDERWIDTH, y2 - y1])
                 self.rect = pygame.Rect(x1, y1, BORDERWIDTH, y2 - y1)
                 self.mask = pygame.mask.from_surface(self.image)
-                if y2 - y1 != BORDERWIDTH:
-                    Border(x1, y1, x1 + BORDERWIDTH, y1)
-                    Border(x2, y2 - BORDERWIDTH, x2 + BORDERWIDTH, y2 - BORDERWIDTH)
+                if y2 - y1 != BORDERWIDTH - 2:
+                    Border(x1 + 1, y1 + 1, x1 + BORDERWIDTH - 1, y1 + 1)
+                    Border(x2 + 1, y2 - BORDERWIDTH - 1, x2 + BORDERWIDTH - 1, y2 - BORDERWIDTH - 1)
             else:  # горизонтальная стенка
                 self.add(horizontal_borders)
                 x2, x1 = max(x2, x1), min(x2, x1)
                 self.image = pygame.Surface([x2 - x1, BORDERWIDTH])
                 self.rect = pygame.Rect(x1, y1, x2 - x1, BORDERWIDTH)
                 self.mask = pygame.mask.from_surface(self.image)
-                if x2 - x1 != BORDERWIDTH:
-                    Border(x1, y1, x1, y1 + BORDERWIDTH)
-                    Border(x2 - BORDERWIDTH, y2, x2 - BORDERWIDTH, y2 + BORDERWIDTH)
+                if x2 - x1 != BORDERWIDTH - 2:
+                    Border(x1 + 1, y1 + 1, x1 + 1, y1 + BORDERWIDTH - 1)
+                    Border(x2 - BORDERWIDTH - 1, y2 + 1, x2 - BORDERWIDTH - 1, y2 + BORDERWIDTH - 1)
 
 def make_perimetr():
     Border(5, 5, width - 5, 5)

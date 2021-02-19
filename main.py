@@ -19,6 +19,7 @@ RADIUS = 6
 SAFETIME = 12
 BORDERWIDTH = 5
 BULLETS = 6
+ROUNDS = 0
 BOOM = []
 
 
@@ -245,9 +246,11 @@ AllTanks = []
 for i in range(1, 6):
     BOOM.append(load_image('explosionSmoke' + str(i) + '.png', -1))
 
+font = pygame.font.SysFont(None, 78)
+
 
 class Tank(pygame.sprite.Sprite):
-    def __init__(self, Buttons, image):
+    def __init__(self, Buttons, image, color):
         super().__init__(tank_group, all_sprites)
         self.index = len(AllTanks)
         AllTanks.append(self)
@@ -257,11 +260,13 @@ class Tank(pygame.sprite.Sprite):
         self.IMAGE0 = image
         self.bullets = 0
         self.dies = 0
+        self.color = color
         self.alive = True
         self.aming = False
         x, y = random.randrange(5, width-10, width//N), random.randrange(5, height - 10, height // M)
         self.rect = self.image.get_rect().move(x, y)
         self.mask = pygame.mask.from_surface(self.image)
+        self.img = font.render(str(ROUNDS - self.dies), True, self.color)
 
     def move(self, keys):
         x, y = 0, 0
@@ -361,6 +366,7 @@ class Tank(pygame.sprite.Sprite):
         x, y = random.randrange(5, width - 10, width // N), random.randrange(5, height - 10, height // M)
         self.rect = self.image.get_rect().move(x, y)
         all_sprites.add(self)
+        self.img = font.render(str(ROUNDS - self.dies), True, self.color)
 
 
 def LivesCounter(mas):
@@ -375,8 +381,8 @@ generate_level(new_lewel())
 
 make_perimetr()
 
-tank1 = Tank(buttons1, load_image('tank_green.png'))
-tank2 = Tank(buttons2, load_image('tank_red.png'))
+tank1 = Tank(buttons1, load_image('tank_green.png'), (0, 255, 0))
+tank2 = Tank(buttons2, load_image('tank_red.png'), (255, 0, 0))
 
 
 if __name__ == '__main__':
@@ -408,6 +414,7 @@ if __name__ == '__main__':
                 AllTanks[i].move(keys)
 
         if LivesCounter(AllTanks) < 2:
+            ROUNDS += 1
             all_sprites.empty()
             vertical_borders.empty()
             horizontal_borders.empty()
@@ -420,6 +427,8 @@ if __name__ == '__main__':
                 AllTanks[i].transfer()
 
         screen.fill(pygame.Color('white'))
+        for i in range(len(AllTanks)):
+            screen.blit(AllTanks[i].img, (width/2 - 30 + i * 60, 30))
         all_sprites.draw(screen)
         all_sprites.update()
 

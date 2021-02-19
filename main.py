@@ -10,8 +10,9 @@ pygame.init()
 
 BOARDSDENSITY = 1/2
 N, M = 9, 5
-TANKSPEED = 4
-ROTATIONSPEED = 3
+TANKSPEED = 6
+ROTATIONSPEED = 4
+AIMINGROTATIONSPEED = 1
 BALLSPEED = 6
 DISAPPEARTIME = 500
 RADIUS = 6
@@ -24,8 +25,8 @@ BOOM = []
 user32 = ctypes.windll.user32
 size = width, height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1) - 50
 screen = pygame.display.set_mode(size)
-buttons1 = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_SPACE]
-buttons2 = [pygame.K_s, pygame.K_f, pygame.K_e, pygame.K_d, pygame.K_q]
+buttons1 = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_SPACE, pygame.KMOD_SHIFT]
+buttons2 = [pygame.K_s, pygame.K_f, pygame.K_e, pygame.K_d, pygame.K_q, pygame.K_3]
 
 
 def IsCorrect(x, y):
@@ -69,18 +70,18 @@ class Border(pygame.sprite.Sprite):
                 self.image = pygame.Surface([BORDERWIDTH, y2 - y1])
                 self.rect = pygame.Rect(x1, y1, BORDERWIDTH, y2 - y1)
                 self.mask = pygame.mask.from_surface(self.image)
-                if y2 - y1 != BORDERWIDTH - 2:
-                    Border(x1 + 1, y1 + 1, x1 + BORDERWIDTH - 1, y1 + 1)
-                    Border(x2 + 1, y2 - BORDERWIDTH - 1, x2 + BORDERWIDTH - 1, y2 - BORDERWIDTH - 1)
+                if y2 - y1 != BORDERWIDTH:
+                    Border(x1, y1, x1 + BORDERWIDTH, y1)
+                    Border(x2, y2 - BORDERWIDTH, x2 + BORDERWIDTH, y2 - BORDERWIDTH)
             else:  # горизонтальная стенка
                 self.add(horizontal_borders)
                 x2, x1 = max(x2, x1), min(x2, x1)
                 self.image = pygame.Surface([x2 - x1, BORDERWIDTH])
                 self.rect = pygame.Rect(x1, y1, x2 - x1, BORDERWIDTH)
                 self.mask = pygame.mask.from_surface(self.image)
-                if x2 - x1 != BORDERWIDTH - 2:
-                    Border(x1 + 1, y1 + 1, x1 + 1, y1 + BORDERWIDTH - 1)
-                    Border(x2 - BORDERWIDTH - 1, y2 + 1, x2 - BORDERWIDTH - 1, y2 + BORDERWIDTH - 1)
+                if x2 - x1 != BORDERWIDTH:
+                    Border(x1, y1, x1, y1 + BORDERWIDTH)
+                    Border(x2 - BORDERWIDTH, y2, x2 - BORDERWIDTH, y2 + BORDERWIDTH)
 
 def make_perimetr():
     Border(5, 5, width - 5, 5)
@@ -257,6 +258,7 @@ class Tank(pygame.sprite.Sprite):
         self.bullets = 0
         self.dies = 0
         self.alive = True
+        self.aming = False
         x, y = random.randrange(5, width-10, width//N), random.randrange(5, height - 10, height // M)
         self.rect = self.image.get_rect().move(x, y)
         self.mask = pygame.mask.from_surface(self.image)
@@ -284,10 +286,16 @@ class Tank(pygame.sprite.Sprite):
 
 
         if keys[self.Buttons[0]]:
-            self.angle += ROTATIONSPEED
+            if self.aming:
+                self.angle += AIMINGROTATIONSPEED
+            else:
+                self.angle += ROTATIONSPEED
 
         if keys[self.Buttons[1]]:
-            self.angle -= ROTATIONSPEED
+            if self.aming:
+                self.angle -= AIMINGROTATIONSPEED
+            else:
+                self.angle -= ROTATIONSPEED
 
         if keys[self.Buttons[2]]:
             x = TANKSPEED * math.cos(math.radians(self.angle))
@@ -385,15 +393,19 @@ if __name__ == '__main__':
                     if AllTanks[i].alive:
                         if event.key == AllTanks[i].Buttons[4]:
                             AllTanks[i].shoot()
+                        if event.key == AllTanks[i].Buttons[5]:
+                            AllTanks[i].aming = True
+
+            if event.type == pygame.KEYUP:
+                for i in range(len(AllTanks)):
+                    if AllTanks[i].alive:
+                        if event.key == AllTanks[i].Buttons[5]:
+                            AllTanks[i].aming = False
 
         keys = pygame.key.get_pressed()
         for i in range(len(AllTanks)):
             if AllTanks[i].alive:
                 AllTanks[i].move(keys)
-
-
-        if pygame.mouse.get_focused():
-            pygame.mouse.set_visible(False)
 
         if LivesCounter(AllTanks) < 2:
             all_sprites.empty()

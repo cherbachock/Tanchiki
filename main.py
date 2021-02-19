@@ -25,8 +25,8 @@ BOOM = []
 user32 = ctypes.windll.user32
 size = width, height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1) - 50
 screen = pygame.display.set_mode(size)
-buttons1 = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_SPACE, pygame.KMOD_SHIFT]
-buttons2 = [pygame.K_s, pygame.K_f, pygame.K_e, pygame.K_d, pygame.K_q, pygame.K_3]
+buttons1 = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_SPACE, pygame.K_m]
+buttons2 = [pygame.K_s, pygame.K_f, pygame.K_e, pygame.K_d, pygame.K_q, pygame.K_1]
 
 
 def IsCorrect(x, y):
@@ -70,18 +70,18 @@ class Border(pygame.sprite.Sprite):
                 self.image = pygame.Surface([BORDERWIDTH, y2 - y1])
                 self.rect = pygame.Rect(x1, y1, BORDERWIDTH, y2 - y1)
                 self.mask = pygame.mask.from_surface(self.image)
-                if y2 - y1 != BORDERWIDTH:
-                    Border(x1, y1, x1 + BORDERWIDTH, y1)
-                    Border(x2, y2 - BORDERWIDTH, x2 + BORDERWIDTH, y2 - BORDERWIDTH)
+                if y2 - y1 != BORDERWIDTH - 4:
+                    Border(x1 + 2, y1 + 2, x1 + BORDERWIDTH - 2, y1 + 2)
+                    Border(x2 + 2, y2 - BORDERWIDTH - 2, x2 + BORDERWIDTH - 2, y2 - BORDERWIDTH - 2)
             else:  # горизонтальная стенка
                 self.add(horizontal_borders)
                 x2, x1 = max(x2, x1), min(x2, x1)
                 self.image = pygame.Surface([x2 - x1, BORDERWIDTH])
                 self.rect = pygame.Rect(x1, y1, x2 - x1, BORDERWIDTH)
                 self.mask = pygame.mask.from_surface(self.image)
-                if x2 - x1 != BORDERWIDTH:
-                    Border(x1, y1, x1, y1 + BORDERWIDTH)
-                    Border(x2 - BORDERWIDTH, y2, x2 - BORDERWIDTH, y2 + BORDERWIDTH)
+                if x2 - x1 != BORDERWIDTH - 4:
+                    Border(x1 + 2, y1 + 2, x1 + 2, y1 + BORDERWIDTH - 2)
+                    Border(x2 - BORDERWIDTH - 2, y2 + 2, x2 - BORDERWIDTH - 2, y2 + BORDERWIDTH - 2)
 
 def make_perimetr():
     Border(5, 5, width - 5, 5)

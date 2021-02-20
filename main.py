@@ -9,19 +9,19 @@ import ctypes
 pygame.init()
 
 BOARDSDENSITY = 1/2
-N, M = 9, 5
+N, M = 10, 6
 TANKSPEED = 6
-ROTATIONSPEED = 4
+ROTATIONSPEED = 5
 AIMINGROTATIONSPEED = 1
-BALLSPEED = 6
+BALLSPEED = 8
 DISAPPEARTIME = 500
 RADIUS = 6
-SAFETIME = 12
+SAFETIME = 20
 BORDERWIDTH = 5
 BULLETS = 6
 ROUNDS = 0
 BOOM = []
-
+MUZZLE_ELONGETION = 30
 
 user32 = ctypes.windll.user32
 size = width, height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1) - 50
@@ -130,7 +130,7 @@ def dfs(x, y):
 
 
 def convert(x, y):
-    return int(5 + (x + 1) * (width - 10) / N), int(5 + (y + 1) * (height - 10) / M)
+    return int(15 + (x + 1) * (width - 10) / N), int(5 + (y + 1) * (height - 10) / M)
 
 
 def new_lewel():
@@ -337,8 +337,8 @@ class Tank(pygame.sprite.Sprite):
             return
         vx = BALLSPEED * math.cos(self.angle * math.pi / 180)
         vy = - BALLSPEED * math.sin(self.angle * math.pi / 180)
-        x = (self.IMAGE0.get_width()) * math.cos(self.angle * math.pi / 180) / 2
-        y = - (self.IMAGE0.get_height()) * math.sin(self.angle * math.pi / 180) / 2
+        x = (self.IMAGE0.get_height() + MUZZLE_ELONGETION)/2 * math.cos(self.angle * math.pi / 180)
+        y = -(self.IMAGE0.get_height() + MUZZLE_ELONGETION)/2 * math.sin(self.angle * math.pi / 180)
         self.bullets += 1
         Ball(RADIUS, self.rect.center[0] + x - RADIUS // 2, self.rect.center[1] + y - RADIUS // 2, vx, vy, self.index)
 
@@ -452,5 +452,5 @@ if __name__ == '__main__':
         all_sprites.draw(screen)
         all_sprites.update()
 
-        pygame.time.delay(10)
+        pygame.time.wait(10)
         pygame.display.flip()

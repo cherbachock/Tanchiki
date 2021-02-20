@@ -10,16 +10,17 @@ pygame.init()
 
 BOARDSDENSITY = 1/2
 N, M = 10, 6
-TANKSPEED = 6
-ROTATIONSPEED = 5
+TANKSPEED = 11
+ROTATIONSPEED = 9
 AIMINGROTATIONSPEED = 1
-BALLSPEED = 8
+BALLSPEED = 14
 DISAPPEARTIME = 500
 RADIUS = 6
 SAFETIME = 20
 BORDERWIDTH = 5
 BULLETS = 6
 ROUNDS = 0
+FPS = 24
 BOOM = []
 MUZZLE_ELONGETION = 30
 
@@ -407,6 +408,7 @@ tank2 = Tank(buttons2, load_image('tank_red.png'), (255, 0, 0))
 if __name__ == '__main__':
     screen.fill(pygame.Color('white'))
     time = 0
+    clock = pygame.time.Clock()
     start_screen()
 
     running = True
@@ -452,5 +454,5 @@ if __name__ == '__main__':
         all_sprites.draw(screen)
         all_sprites.update()
 
-        pygame.time.wait(10)
+        clock.tick(FPS)
         pygame.display.flip()

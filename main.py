@@ -377,6 +377,25 @@ def LivesCounter(mas):
     return answer
 
 
+def start_screen():
+    WIDTH, HEIGHT = 1280, 720
+
+    fon = pygame.transform.scale(load_image('fon.png'), (WIDTH, HEIGHT))
+    screen.blit(fon, (0, 0))
+
+    running = True
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                reunning = False
+            elif event.type == pygame.KEYDOWN or \
+                    event.type == pygame.MOUSEBUTTONDOWN:
+                return  # начинаем игру
+        pygame.display.flip()
+        pygame.time.delay(10)
+
+
 generate_level(new_lewel())
 
 make_perimetr()
@@ -388,6 +407,7 @@ tank2 = Tank(buttons2, load_image('tank_red.png'), (255, 0, 0))
 if __name__ == '__main__':
     screen.fill(pygame.Color('white'))
     time = 0
+    start_screen()
 
     running = True
     while running:  # главный игровой цикл

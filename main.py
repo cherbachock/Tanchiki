@@ -335,7 +335,7 @@ class Tank(pygame.sprite.Sprite):
         x = (self.IMAGE0.get_height() + MUZZLE_ELONGETION) / 2 * math.cos(self.angle * math.pi / 180)
         y = -(self.IMAGE0.get_height() + MUZZLE_ELONGETION) / 2 * math.sin(self.angle * math.pi / 180)
         self.bullets += 1
-        Ball(RADIUS, self.rect.center[0] + x - RADIUS // 2, self.rect.center[1] + y - RADIUS // 2, vx, vy, self.index)
+        Ball(RADIUS, self.rect.center[0] + x - RADIUS, self.rect.center[1] + y - RADIUS, vx, vy, self.index)
 
     def update(self, *args, **kwargs):
         for i in Balls:

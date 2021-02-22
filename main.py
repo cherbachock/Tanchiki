@@ -5,10 +5,9 @@ import random
 import math
 import ctypes
 
-
 pygame.init()
 
-BOARDSDENSITY = 1/2
+BOARDSDENSITY = 1 / 2
 N, M = 9, 5
 TANKSPEED = 7
 BACKSPEED = 5
@@ -56,7 +55,6 @@ def load_image(name, colorkey=None):
 
 
 all_sprites = pygame.sprite.Group()
-
 
 horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
@@ -106,6 +104,7 @@ def generate_level(level):
     for i in range(len(level)):
         Border(*level[i])
 
+
 color = []
 
 
@@ -120,7 +119,7 @@ def dfs(x, y):
     for i in range(len(m)):
         a = x + m[i][0]
         b = y + m[i][1]
-        if 0 <= a <= N-2 and 0 <= b <= M-2:
+        if 0 <= a <= N - 2 and 0 <= b <= M - 2:
             if color[a][b][0] == 0:
                 if decision(BOARDSDENSITY):
                     color[x][y].append([a, b])
@@ -134,9 +133,9 @@ def convert(x, y):
 def new_lewel():
     global color
     level = []
-    color = [0] * (N-1)
-    for i in range(N-1):
-        color[i] = [0] * (M-1)
+    color = [0] * (N - 1)
+    for i in range(N - 1):
+        color[i] = [0] * (M - 1)
     for i in range(len(color)):
         for j in range(len(color[i])):
             color[i][j] = [0]
@@ -177,7 +176,6 @@ class Ball(pygame.sprite.Sprite):
         self.up_down = self.vy0 <= 0
         self.left_right = self.vx0 <= 0
         self.parent = parent
-
 
     def update(self):
         self.time += 1
@@ -261,7 +259,7 @@ class Tank(pygame.sprite.Sprite):
         self.color = color
         self.alive = True
         self.aming = False
-        x, y = random.randrange(5, width-10, width//N), random.randrange(5, height - 10, height // M)
+        x, y = random.randrange(5, width - 10, width // N), random.randrange(5, height - 10, height // M)
         self.rect = self.image.get_rect().move(x, y)
         self.mask = pygame.mask.from_surface(self.image)
         self.img = font.render(str(ROUNDS - self.dies), True, self.color)
@@ -286,7 +284,6 @@ class Tank(pygame.sprite.Sprite):
                 coll2 = True
                 if self.rect.centerx < i.rect.x:
                     left_right = True
-
 
         if keys[self.Buttons[0]]:
             if self.aming:
@@ -335,8 +332,8 @@ class Tank(pygame.sprite.Sprite):
             return
         vx = BALLSPEED * math.cos(self.angle * math.pi / 180)
         vy = - BALLSPEED * math.sin(self.angle * math.pi / 180)
-        x = (self.IMAGE0.get_height() + MUZZLE_ELONGETION)/2 * math.cos(self.angle * math.pi / 180)
-        y = -(self.IMAGE0.get_height() + MUZZLE_ELONGETION)/2 * math.sin(self.angle * math.pi / 180)
+        x = (self.IMAGE0.get_height() + MUZZLE_ELONGETION) / 2 * math.cos(self.angle * math.pi / 180)
+        y = -(self.IMAGE0.get_height() + MUZZLE_ELONGETION) / 2 * math.sin(self.angle * math.pi / 180)
         self.bullets += 1
         Ball(RADIUS, self.rect.center[0] + x - RADIUS // 2, self.rect.center[1] + y - RADIUS // 2, vx, vy, self.index)
 
@@ -401,7 +398,6 @@ make_perimetr()
 tank1 = Tank(buttons1, load_image('tank_green.png'), (0, 255, 0))
 tank2 = Tank(buttons2, load_image('tank_red.png'), (255, 0, 0))
 
-
 if __name__ == '__main__':
     screen.fill(pygame.Color('white'))
     time = 0
@@ -447,7 +443,7 @@ if __name__ == '__main__':
 
         screen.fill(pygame.Color('white'))
         for i in range(len(AllTanks)):
-            screen.blit(AllTanks[i].img, (width/2 - 30 + i * 60, 30))
+            screen.blit(AllTanks[i].img, (width / 2 - 30 + i * 60, 30))
         all_sprites.draw(screen)
         all_sprites.update()
 

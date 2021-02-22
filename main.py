@@ -9,20 +9,21 @@ import ctypes
 pygame.init()
 
 BOARDSDENSITY = 1/2
-N, M = 10, 6
-TANKSPEED = 11
-ROTATIONSPEED = 9
+N, M = 9, 5
+TANKSPEED = 7
+BACKSPEED = 5
+ROTATIONSPEED = 5
 AIMINGROTATIONSPEED = 1
-BALLSPEED = 14
+BALLSPEED = 9
 DISAPPEARTIME = 500
-RADIUS = 6
-SAFETIME = 20
+RADIUS = 8
+SAFETIME = 10
 BORDERWIDTH = 5
 BULLETS = 6
 ROUNDS = 0
-FPS = 24
+FPS = 50
 BOOM = []
-MUZZLE_ELONGETION = 30
+MUZZLE_ELONGETION = 10
 
 user32 = ctypes.windll.user32
 size = width, height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1) - 50
@@ -72,18 +73,14 @@ class Border(pygame.sprite.Sprite):
                 self.image = pygame.Surface([BORDERWIDTH, y2 - y1])
                 self.rect = pygame.Rect(x1, y1, BORDERWIDTH, y2 - y1)
                 self.mask = pygame.mask.from_surface(self.image)
-                if y2 - y1 != BORDERWIDTH - 4:
-                    Border(x1 + 2, y1 + 2, x1 + BORDERWIDTH - 2, y1 + 2)
-                    Border(x2 + 2, y2 - BORDERWIDTH - 2, x2 + BORDERWIDTH - 2, y2 - BORDERWIDTH - 2)
+
             else:  # горизонтальная стенка
                 self.add(horizontal_borders)
                 x2, x1 = max(x2, x1), min(x2, x1)
                 self.image = pygame.Surface([x2 - x1, BORDERWIDTH])
                 self.rect = pygame.Rect(x1, y1, x2 - x1, BORDERWIDTH)
                 self.mask = pygame.mask.from_surface(self.image)
-                if x2 - x1 != BORDERWIDTH - 4:
-                    Border(x1 + 2, y1 + 2, x1 + 2, y1 + BORDERWIDTH - 2)
-                    Border(x2 - BORDERWIDTH - 2, y2 + 2, x2 - BORDERWIDTH - 2, y2 + BORDERWIDTH - 2)
+
 
 def make_perimetr():
     Border(5, 5, width - 5, 5)
@@ -308,8 +305,8 @@ class Tank(pygame.sprite.Sprite):
             y = - TANKSPEED * math.sin(math.radians(self.angle))
 
         if keys[self.Buttons[3]]:
-            x = - TANKSPEED * math.cos(math.radians(self.angle))
-            y = TANKSPEED * math.sin(math.radians(self.angle))
+            x = - BACKSPEED * math.cos(math.radians(self.angle))
+            y = BACKSPEED * math.sin(math.radians(self.angle))
 
         self.angle = self.angle % 360
 

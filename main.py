@@ -15,8 +15,8 @@ ROTATIONSPEED = 5
 AIMINGROTATIONSPEED = 1
 BALLSPEED = 9
 DISAPPEARTIME = 500
-RADIUS = 8
-SAFETIME = 10
+RADIUS = 6
+SAFETIME = 12
 BORDERWIDTH = 5
 BULLETS = 6
 ROUNDS = 0
@@ -71,13 +71,18 @@ class Border(pygame.sprite.Sprite):
                 self.image = pygame.Surface([BORDERWIDTH, y2 - y1])
                 self.rect = pygame.Rect(x1, y1, BORDERWIDTH, y2 - y1)
                 self.mask = pygame.mask.from_surface(self.image)
-
+                if y2 - y1 != BORDERWIDTH - 4:
+                    Border(x1 + 2, y1 + 2, x1 + BORDERWIDTH - 2, y1 + 2)
+                    Border(x2 + 2, y2 - BORDERWIDTH - 2, x2 + BORDERWIDTH - 2, y2 - BORDERWIDTH - 2)
             else:  # горизонтальная стенка
                 self.add(horizontal_borders)
                 x2, x1 = max(x2, x1), min(x2, x1)
                 self.image = pygame.Surface([x2 - x1, BORDERWIDTH])
                 self.rect = pygame.Rect(x1, y1, x2 - x1, BORDERWIDTH)
                 self.mask = pygame.mask.from_surface(self.image)
+                if x2 - x1 != BORDERWIDTH - 4:
+                    Border(x1 + 2, y1 + 2, x1 + 2, y1 + BORDERWIDTH - 2)
+                    Border(x2 - BORDERWIDTH - 2, y2 + 2, x2 - BORDERWIDTH - 2, y2 + BORDERWIDTH - 2)
 
 
 def make_perimetr():
